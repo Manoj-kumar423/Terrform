@@ -102,7 +102,7 @@ resource "aws_instance" "webserver2" {
   user_data              = base64encode(file("userdata1.sh"))
 }
 
-#create alb
+#create application lb
 resource "aws_lb" "myalb" {
   name               = "myalb"
   internal           = false
@@ -116,7 +116,7 @@ resource "aws_lb" "myalb" {
   }
 }
 
-#create load balancer
+#create target group to that lb
 resource "aws_lb_target_group" "tg" {
   name     = "myTG"
   port     = 80
@@ -129,21 +129,21 @@ resource "aws_lb_target_group" "tg" {
   }
 }
 
-#create load balancer attachment1
+#create what should be inside target group
 resource "aws_lb_target_group_attachment" "attach1" {
   target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.webserver1.id
   port             = 80
 }
 
-#create load balancer attachment2
+#create what should be ibside target group
 resource "aws_lb_target_group_attachment" "attach2" {
   target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.webserver2.id
   port             = 80
 }
 
-#create load balancer load balancer
+#create load balancer to target group using listener
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.myalb.arn
   port              = 80
